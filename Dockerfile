@@ -1,23 +1,21 @@
-# --- Build custom Caddy with plugins ---
-FROM caddy:builder AS builder
+FROM golang:1.21 AS builder
+
+# Install xcaddy and build Caddy with plugins
+RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
+
+WORKDIR /build
 
 RUN xcaddy build \
-    --with github.com/caddyserver/replace-response \
-    --with github.com/caddyserver/transform-encoder
+  --with github.com/caddyserver/replace-response \
+  --with github.com/caddyserver/transform-encoder
 
-# --- Final stage: strip out the setcap step ---
-FROM caddy:latest
+# Final minimal image
+FROM alpine:3.18
 
-# Set a non-root user to prevent permission issues
-USER caddy
+RUN apk add --no-cache curl ca-certificates
 
-# Copy the custom Caddy binary
-COPY --from=builder /usr/bin/caddy /usr/bin/caddy
-
-# Copy your config
+COPY --from=builder /build/caddy /usr/bin/caddy
 COPY ./scripts/caddy/Caddyfile /etc/caddy/Caddyfile
 
-# Use port 8080 for Render compatibility
 EXPOSE 8080
-
 CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
