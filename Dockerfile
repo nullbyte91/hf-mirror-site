@@ -4,11 +4,10 @@ RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 
 WORKDIR /build
 
-RUN xcaddy build \
+RUN xcaddy build github.com/caddyserver/caddy/v2@v2.9.1 \
   --with github.com/caddyserver/replace-response@latest \
   --with github.com/caddyserver/transform-encoder@latest \
-  --output /build/caddy \
-  github.com/caddyserver/caddy/v2@v2.9.1
+  --output /build/caddy
 
 FROM alpine:3.18
 
