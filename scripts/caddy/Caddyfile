@@ -1,19 +1,17 @@
 :8080 {
-	# Reverse proxy Hugging Face
-	reverse_proxy https://huggingface.co {
-		header_up Authorization "Bearer {env.HUGGINGFACE_API_TOKEN}"
-	}
+    reverse_proxy https://huggingface.co {
+        header_up Authorization "Bearer {env.HUGGINGFACE_API_TOKEN}"
+    }
 
-	# Set up logging
-	log {
-		output file /var/log/caddy/hf-mirror.log {
-			roll_size 100MiB
-			roll_keep 5
-			roll_keep_for 720h
-		}
-		format transform `{request>headers>X-Forwarded-For>[0]:request>remote_ip} - {request>user_id} [{ts}] "{request>method} {request>uri} {request>proto}" {status} {size} "{request>headers>Referer>[0]}" "{request>headers>User-Agent>[0]}"` {
-			time_format wall
-		}
-		level INFO
-	}
+    log {
+        output file /var/log/caddy/hf-mirror.log {
+            roll_size 100MiB
+            roll_keep 5
+            roll_keep_for 720h
+        }
+        format transform `{request>headers>X-Forwarded-For>[0]:request>remote_ip} - {request>user_id} [{ts}] "{request>method} {request>uri} {request>proto}" {status} {size} "{request>headers>Referer>[0]}" "{request>headers>User-Agent>[0]}"` {
+            time_format wall
+        }
+        level INFO
+    }
 }
