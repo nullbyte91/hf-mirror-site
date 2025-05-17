@@ -1,11 +1,53 @@
-:8080 {
-    reverse_proxy https://huggingface.co {
-        header_up Authorization "Bearer {env.HUGGINGFACE_API_TOKEN}"
-    }
+{
+    env MIRROR_HOST
+}
 
+:8080 {
     log {
         output stdout
         format console
-        level INFO
+    }
+
+    handle /favicon.ico /logo.svg /robots.txt /invalid_referer.html /login_error.html /scripts.js /styles.css {
+        root * /var/www/html/hf-mirror.com/
+        file_server
+    }
+
+    handle / {
+        root * /var/www/html/hf-mirror.com/
+        try_files /index.html
+        file_server
+    }
+
+    header / Cache-Control "no-cache"
+    header /front/* Cache-Control "public, max-age=259200"
+
+    handle /api/event {
+        respond "OK"
+    }
+    
+    handle /cdn-cgi/rum {
+        respond 204
+    }
+
+    @invalid_referer {
+        path_regexp .*/resolve/main/.*
+        not header !Referer
+        not header_regexp Referer ^https?://(\.*\.)?{$MIRROR_HOST}(/|$)
+        not header_regexp Referer ^https?://localhost
+    }
+    rewrite @invalid_referer /invalid_referer.html
+
+    @auth {
+        path /login /join
+    }
+    rewrite @auth /login_error.html
+
+    handle {
+        reverse_proxy https://huggingface.co {
+            header_up Host {upstream_hostport}
+            header_down Location huggingface\.co {$MIRROR_HOST}
+            header_down Location cdn-lfs\.huggingface\.co cdn-lfs.{$MIRROR_HOST}
+        }
     }
 }
