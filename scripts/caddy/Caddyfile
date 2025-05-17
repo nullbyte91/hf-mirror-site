@@ -1,27 +1,32 @@
-{
-    env MIRROR_HOST
-}
+# Simple Caddyfile for HF Mirror on Render
 
 :8080 {
+    # Basic logging to stdout (for Render logs)
     log {
         output stdout
         format console
     }
 
+    # Handle static files
     handle /favicon.ico /logo.svg /robots.txt /invalid_referer.html /login_error.html /scripts.js /styles.css {
         root * /var/www/html/hf-mirror.com/
         file_server
     }
 
+    # Home page
     handle / {
         root * /var/www/html/hf-mirror.com/
         try_files /index.html
         file_server
     }
 
+    # Prevent caching main UI to ensure latest version
     header / Cache-Control "no-cache"
+    
+    # Static assets cache for 3 days
     header /front/* Cache-Control "public, max-age=259200"
 
+    # Block API requests that would cause high server load
     handle /api/event {
         respond "OK"
     }
@@ -30,24 +35,27 @@
         respond 204
     }
 
+    # Prevent hotlinking of model files
     @invalid_referer {
         path_regexp .*/resolve/main/.*
         not header !Referer
-        not header_regexp Referer ^https?://(\.*\.)?{$MIRROR_HOST}(/|$)
+        not header_regexp Referer ^https?://.*\.onrender\.com
         not header_regexp Referer ^https?://localhost
     }
     rewrite @invalid_referer /invalid_referer.html
 
+    # Disable login functionality
     @auth {
         path /login /join
     }
     rewrite @auth /login_error.html
 
+    # Replace Hugging Face references in responses
     handle {
         reverse_proxy https://huggingface.co {
             header_up Host {upstream_hostport}
-            header_down Location huggingface\.co {$MIRROR_HOST}
-            header_down Location cdn-lfs\.huggingface\.co cdn-lfs.{$MIRROR_HOST}
+            header_down Location huggingface\.co {http.request.host}
+            header_down Location cdn-lfs\.huggingface\.co cdn-lfs.{http.request.host}
         }
     }
 }
