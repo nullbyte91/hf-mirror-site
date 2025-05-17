@@ -1,29 +1,26 @@
-# Mirror site of huggingface
+FROM golang:1.22 AS builder
 
-Public version: [https://hf-mirror.com/](https://hf-mirror.com/)
+RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 
-## Deploy your own mirror
+WORKDIR /build
 
-### Step 1: Install caddy
-Install Caddy with the following plugins:
+RUN xcaddy build github.com/caddyserver/caddy/v2@v2.9.1 \
+  --with github.com/caddyserver/replace-response@latest \
+  --with github.com/caddyserver/transform-encoder@latest \
+  --output /build/caddy
 
-- replace-response
-- transform-encoder
-- (Option) caddy-dns/cloudflare
+FROM alpine:3.18
 
-You can download the executable caddy file containing the above plugins from [the official website here](https://caddyserver.com/download?package=github.com%2Fcaddyserver%2Freplace-response&package=github.com%2Fcaddy-dns%2Fcloudflare&package=github.com%2Fcaddyserver%2Ftransform-encoder) or build with [xcaddy](https://github.com/caddyserver/xcaddy).
+RUN apk add --no-cache curl ca-certificates
 
+COPY --from=builder /build/caddy /usr/bin/caddy
+COPY ./scripts/caddy/Caddyfile /etc/caddy/Caddyfile
 
-### Step 2: prepare .env file
+# Create directories for static files
+RUN mkdir -p /var/www/html/hf-mirror.com
 
-.env
-```
-MIRROR_HOST=hf-mirror.com
-CF_TOKEN=your_cf_api_token_if_you_use_cloudflare_dns
-API_KEY="" # ignore it
-```
+# Copy static files
+COPY ./dist/ /var/www/html/hf-mirror.com/
 
-### Step 3: run caddy
-```bash
-caddy run --envfile ./scripts/caddy/.env.template --config ./scripts/caddy/Caddyfile
-```
+EXPOSE 8080
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

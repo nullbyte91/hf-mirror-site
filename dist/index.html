@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html lang="zh">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HF-Mirror - Huggingface 镜像站</title>
-    <meta name="description" content="加速访问Hugging Face的门户。作为一个公益项目，我们致力于提供稳定、快速的镜像服务，帮助国内用户无障碍访问Hugging Face的资源。" />
+    <title>HF-Mirror - Hugging Face Mirror Site</title>
+    <meta name="description" content="Fast access to Hugging Face resources. A mirror project providing stable, quick access to Hugging Face models and datasets." />
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;1,300;1,400&display=swap"
-        rel="stylesheet">
-
 </head>
-
 <body>
     <header>
         <div class="top">
-            <h1><a href="/" class="header-link">🤗 Huggingface 镜像站</a></h1>
-            <div class="search-box" style="position:relative;">
-                <input type="text" class="search-input" placeholder="搜索模型、数据集..." id="searchKeyword" autocomplete="off">
+            <h1><a href="/" class="header-link">🤗 Hugging Face Mirror</a></h1>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search models, datasets..." id="searchKeyword" autocomplete="off">
                 <svg class="search-svg" aria-hidden="true" focusable="false" role="img" width="1em" height="1em"
                     preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32">
                     <path d="M30 28.59L22.45 21A11 11 0 1 0 21 22.45L28.59 30zM5 14a9 9 0 1 1 9 9a9 9 0 0 1-9-9z"
@@ -33,146 +28,81 @@
         <section class="rankings">
             <div class="rankings-header">
                 <h2>
-                    热门排行🔥
+                    Popular Resources 🔥
                 </h2>
             </div>
 
             <div class="tabs">
-                <div class="tab" data-type="all">全部</div>
-                <div class="tab" data-type="model">模型</div>
-                <div class="tab" data-type="dataset">数据集</div>
-                <!-- <div class="tab" data-type="space">空间</div> -->
-
+                <div class="tab" data-type="all">All</div>
+                <div class="tab" data-type="model">Models</div>
+                <div class="tab" data-type="dataset">Datasets</div>
             </div>
             <div id="trendingItems" class="trending-items"></div>
             <div class="button-link-container">
-                <button id="toggleButton" class="toggle-button">展开</button>
-                <a href="/models" id="moreItems" class="more-items">更多 »</a>
+                <button id="toggleButton" class="toggle-button">Show More</button>
+                <a href="/models" id="moreItems" class="more-items">More »</a>
             </div>
-
         </section>
-
 
         <section class="tutorial">
             <div class="tutorial-header">
-                <h2>如何使用镜像站🌟
+                <h2>How to Use the Mirror 🌟
                 </h2>
             </div>
             <div class="instructions">
-                <blockquote>本站域名
-                    <a href="https://hf-mirror.com" target="_blank">hf-mirror.com</a>，用于镜像
-                    <a href="https://huggingface.co" target="_blank">huggingface.co</a>
-                    域名。作为一个公益项目，致力于帮助国内AI开发者快速、稳定的下载模型、数据集。捐赠支持请看网页左下角，感谢支持！
+                <blockquote>
+                    This mirror site for <a href="https://huggingface.co" target="_blank">huggingface.co</a> 
+                    helps you quickly and stably download models and datasets when the main site is blocked.
                 </blockquote>
 
-                更多详细用法请看<b><a href="https://zhuanlan.zhihu.com/p/663712983">《这篇教程》</a></b>。
-
-                <h3>方法一：网页下载</h3>
-                <p>在本站搜索，并在模型主页的<code>Files and Version</code>中下载文件。</p>
-                <h3>方法二：huggingface-cli</h3>
-                <p><a href="https://hf-mirror.com/docs/huggingface_hub/guides/download#download-from-the-cli"><code>huggingface-cli</code>
-                    </a>是 Hugging Face 官方提供的命令行工具，自带完善的下载功能。</p>
-                <b>1. 安装依赖</b><br>
-                <pre
-                    class="code-sample"><code>pip install -U huggingface_hub</code><button onclick="copyCode(this)">Copy</button></pre>
-                <b>2. 设置环境变量</b>
-                <br><i>Linux</i>
-                <pre
-                    class="code-sample"><code>export HF_ENDPOINT=https://hf-mirror.com</code><button onclick="copyCode(this)">Copy</button></pre>
-                <i>Windows Powershell</i>
-                <pre
-                class="code-sample"><code>$env:HF_ENDPOINT = "https://hf-mirror.com"</code><button onclick="copyCode(this)">Copy</button></pre>
-                建议将上面这一行写入 <code>~/.bashrc</code>。
-                <br><b>3.1 下载模型</b>
-                <pre
-                    class="code-sample"><code>huggingface-cli download --resume-download gpt2 --local-dir gpt2</code><button onclick="copyCode(this)">Copy</button></pre>
-                <b>3.2 下载数据集</b>
-                <pre
-                    class="code-sample"><code>huggingface-cli download --repo-type dataset --resume-download wikitext --local-dir wikitext</code><button onclick="copyCode(this)">Copy</button></pre>
-                可以添加 <code>--local-dir-use-symlinks False</code> 参数禁用文件软链接，这样下载路径下所见即所得，详细解释请见上面提到的教程。
-                <h3>方法三：使用 hfd </h3>
-                <p><b><a href="https://gist.github.com/padeoe/697678ab8e528b85a2a7bddafea1fa4f">hfd</a></b> 是本站开发的
-                    huggingface 专用下载工具，基于成熟工具 <code>git+aria2</code>，可以做到稳定下载不断线。</p>
-                <b>1. 下载hfd</b>
-                <pre
-                    class="code-sample"><code>wget https://hf-mirror.com/hfd/hfd.sh<br>chmod a+x hfd.sh</code><button onclick="copyCode(this)">Copy</button></pre>
-                <b>2. 设置环境变量</b>
-                <br><i>Linux</i>
-                <pre
-                    class="code-sample"><code>export HF_ENDPOINT=https://hf-mirror.com</code><button onclick="copyCode(this)">Copy</button></pre>
-                <i>Windows Powershell</i>
-                <pre
-                class="code-sample"><code>$env:HF_ENDPOINT = "https://hf-mirror.com"</code><button onclick="copyCode(this)">Copy</button></pre>
-                <b>3.1 下载模型</b>
-                <pre
-                    class="code-sample"><code>./hfd.sh gpt2 --tool aria2c -x 4</code><button onclick="copyCode(this)">Copy</button></pre>
-                <b>3.2 下载数据集</b>
-                <pre
-                    class="code-sample"><code>./hfd.sh wikitext --dataset --tool aria2c -x 4</code><button onclick="copyCode(this)">Copy</button></pre>
-                <h3>方法四：使用环境变量（非侵入式）</h3>
-                <p>非侵入式，能解决大部分情况。huggingface 工具链会获取<code>HF_ENDPOINT</code>环境变量来确定下载文件所用的网址，所以可以使用通过设置变量来解决。
-                <pre class="code-sample"><code>HF_ENDPOINT=https://hf-mirror.com python your_script.py</code><button onclick="copyCode(this)">Copy</button>
-                </pre>
-                不过有些数据集有内置的下载脚本，那就需要手动改一下脚本内的地址来实现了。
-                </p>
+                <h3>Method 1: Web Download</h3>
+                <p>Search on this site and download files from the model page's <code>Files and Version</code> section.</p>
+                
+                <h3>Method 2: Using huggingface-cli</h3>
+                <p><a href="/docs/huggingface_hub/guides/download#download-from-the-cli"><code>huggingface-cli</code></a> 
+                is the official command-line tool with download functionality.</p>
+                <b>1. Install dependencies</b><br>
+                <pre class="code-sample"><code>pip install -U huggingface_hub</code><button onclick="copyCode(this)">Copy</button></pre>
+                <b>2. Set environment variable</b>
+                <br><i>Linux/macOS</i>
+                <pre class="code-sample"><code>export HF_ENDPOINT=https://your-mirror-domain</code><button onclick="copyCode(this)">Copy</button></pre>
+                <i>Windows PowerShell</i>
+                <pre class="code-sample"><code>$env:HF_ENDPOINT = "https://your-mirror-domain"</code><button onclick="copyCode(this)">Copy</button></pre>
+                We recommend adding this to your <code>~/.bashrc</code> or profile.
+                <br><b>3.1 Download a model</b>
+                <pre class="code-sample"><code>huggingface-cli download --resume-download gpt2 --local-dir gpt2</code><button onclick="copyCode(this)">Copy</button></pre>
+                <b>3.2 Download a dataset</b>
+                <pre class="code-sample"><code>huggingface-cli download --repo-type dataset --resume-download wikitext --local-dir wikitext</code><button onclick="copyCode(this)">Copy</button></pre>
+                You can add <code>--local-dir-use-symlinks False</code> to disable file symlinks.
+                
+                <h3>Method 3: Environment variable (non-intrusive)</h3>
+                <p>For Python scripts, you can set the environment variable directly:</p>
+                <pre class="code-sample"><code>HF_ENDPOINT=https://your-mirror-domain python your_script.py</code><button onclick="copyCode(this)">Copy</button></pre>
+                
                 <div class="QA">
-                    <h2 class="QA">常见问题</h2>
-                    <h3>Q: 有些项目需要登录，如何下载？</h3>
+                    <h2 class="QA">Frequently Asked Questions</h2>
+                    <h3>Q: Some projects require login, how can I download them?</h3>
                     <p>
-                        <b>A</b>：部分 Gated Repo 需登录申请许可。为保障账号安全，本站不支持登录，需先前往 Hugging Face 官网登录、申请许可，在<a
-                            href="https://huggingface.co/settings/tokens">官网这里获取 Access Token</a> 后回镜像站用命令行下载。<br>部分工具下载
-                        Gated Repo 的方法：
+                        <b>A</b>: For gated repositories that require permission, this mirror doesn't support login for security reasons. 
+                        You should first visit the official Hugging Face site to login and request access, then 
+                        <a href="https://huggingface.co/settings/tokens">get an Access Token</a> and use that with the mirror for CLI downloads:
                     </p>
-                    <b>huggingface-cli： 添加<code>--token</code>参数</b>
+                    <b>With huggingface-cli: Add <code>--token</code> parameter</b>
                     <pre class="code-sample">
-                            <code>huggingface-cli download --token hf_*** --resume-download meta-llama/Llama-2-7b-hf --local-dir Llama-2-7b-hf</code><button onclick="copyCode(this)">Copy</button>
-                        </pre>
-                    <b>hfd： 添加<code>--hf_username</code><code>--hf_token</code>参数</b>
-                    <pre class="code-sample">
-                            <code>hfd meta-llama/Llama-2-7b --hf_username YOUR_HF_USERNAME --hf_token hf_***</code><button onclick="copyCode(this)">Copy</button>
-                        </pre>
-                    其余如<code>from_pretrained</code>、<code>wget</code>、<code>curl</code>如何设置认证 token，详见上面第一段提到的教程。
+                        <code>huggingface-cli download --token hf_*** --resume-download meta-llama/Llama-2-7b-hf --local-dir Llama-2-7b-hf</code><button onclick="copyCode(this)">Copy</button>
+                    </pre>
                 </div>
             </div>
         </section>
-
     </main>
     <footer class="contact">
         <div class="contact-left">
-            <div class="donate">
-                <span class="donate-icon">❤️</span>
-                <a href="javascript:void(0);">捐赠支持</a>
-                <div class="qrcode">
-                    <img src="https://padeoe.com/wp-content/uploads/2023/09/图片_20231031172215.jpg" alt="捐赠二维码">
-                </div>
-            </div>
-        </div>
-        <div class="separator"></div>
-        <div class="contact-center">
-            <div class="groups">
-                <span class="groups-icon">💬</span>
-                <a href="javascript:void(0);">微信交流群</a>
-                <div class="groups_qrcode">
-                    <img src="https://padeoe.com/wp-content/uploads/2023/11/图片_20231107095902.jpg" alt="微信群二维码">
-                </div>
-            </div>
-        </div>
-        <div class="separator"></div>
-        <div class="contact-right">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github"
-                viewBox="0 0 16 16" style="vertical-align: middle; margin-right: 5px;">
-                <path
-                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-            </svg>
-            <a href="https://github.com/padeoe" target="_blank">
-                padeoe
+            <a href="https://github.com" target="_blank">
+                GitHub Repository
             </a>
-
         </div>
     </footer>
 
     <script src="scripts.js"></script>
-
 </body>
-
 </html>

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="zh">
-
+<html lang="en">
 <head>
-    <title>Huggingface 镜像站</title>
+    <title>Hugging Face Mirror</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -10,18 +9,13 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            /* background-color: #f4f4f4; */
             background-image: linear-gradient(to right, #ffffff, #eceff5ad, #ffffff);
-
         }
-
         .container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 20px;
-
         }
-
         .content {
             background-color: #ffffffc9;
             border: 1px solid #e1e1e1;
@@ -31,16 +25,13 @@
             margin-top: 20px;
             text-align: center;
         }
-
         a {
             color: #007bff;
             text-decoration: none;
         }
-
         a:hover {
             text-decoration: underline;
         }
-
         .back-button, .apply-button {
             display: inline-block;
             font-size: 16px;
@@ -53,38 +44,25 @@
             cursor: pointer;
             text-align: center;
         }
-
         .apply-button {
-            background-color: #28a745; /* Green */
+            background-color: #28a745;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="content">
-            <p>如需登录下载 Gated Model，请先点击下方按钮前往 huggingface 官方申请入口。<br> <br> 申请通过后在 <a
-                    href="https://huggingface.co/settings/tokens">官方页面这里</a> 获取 <i>access token</i>
-                ，再使用命令行下载。<br> <br> <br> access token 使用方法见本站首页说明。</p>
-            <button class="back-button" onclick="goBack()">返回上一页</button>
-            <button class="apply-button" id="applyButton" onclick="redirectToOfficialApplicationPage()">前往官方入口</button>
+            <p>To download gated models, please first click the button below to go to the official Hugging Face application portal.<br><br>
+            After approval, get an <a href="https://huggingface.co/settings/tokens">access token here</a> and use the command line to download.<br><br><br>
+            See instructions for using access tokens on the home page.</p>
+            <button class="back-button" onclick="goBack()">Go Back</button>
+            <button class="apply-button" id="applyButton" onclick="redirectToOfficialApplicationPage()">Go to Official Portal</button>
         </div>
-        <script async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4098528738253489"
-            crossorigin="anonymous"></script>
-        <!-- login_error_少广告 -->
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4098528738253489"
-            data-ad-slot="1866407590" data-ad-format="auto" data-full-width-responsive="true"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
     </div>
-
     <script>
         function goBack() {
             window.history.back();
         }
-
         function redirectToOfficialApplicationPage() {
             const params = new URLSearchParams(window.location.search);
             const nextPage = params.get('next');
@@ -96,18 +74,15 @@
                 window.location.href = officialPageUrl;
             }
         }
-
-        // Dynamically update the button text based on the 'next' URL parameter
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             const nextPage = params.get('next');
             if (nextPage) {
                 const projectPathSegments = nextPage.split('/');
-                const projectName = projectPathSegments.length > 2 ? projectPathSegments[1] + '/' + projectPathSegments[2] : '项目';
-                document.getElementById('applyButton').textContent = `前往官方 ${projectName} 申请入口`;
+                const projectName = projectPathSegments.length > 2 ? projectPathSegments[1] + '/' + projectPathSegments[2] : 'project';
+                document.getElementById('applyButton').textContent = `Go to Official ${projectName} Portal`;
             }
         };
     </script>
 </body>
-
 </html>
