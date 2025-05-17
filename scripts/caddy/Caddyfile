@@ -1,61 +1,42 @@
-# Simple Caddyfile for HF Mirror on Render - No special plugins required
+# Minimal Working Caddyfile for HF Mirror on Render
 
 :8080 {
-    # Basic logging to stdout (for Render logs)
+    # Enable logging to debug issues
     log {
         output stdout
         format console
+        level INFO
     }
 
-    # Handle static files
-    handle /favicon.ico /logo.svg /robots.txt /invalid_referer.html /login_error.html /scripts.js /styles.css {
-        root * /var/www/html/hf-mirror.com/
+    # Set root directory for static files
+    root * /var/www/html/hf-mirror.com
+
+    # Handle homepage - serve index.html
+    @homepage {
+        path /
+    }
+    handle @homepage {
+        try_files {path} /index.html
         file_server
     }
 
-    # Home page
-    handle / {
-        root * /var/www/html/hf-mirror.com/
-        try_files /index.html
+    # Static files - ensure these are served directly
+    @static {
+        path *.css *.js *.ico *.svg *.html
+    }
+    handle @static {
         file_server
     }
 
-    # Static assets cache for 3 days
-    header /front/* Cache-Control "public, max-age=259200"
-
-    # Block API requests that would cause high server load
-    handle /api/event {
-        respond "OK"
-    }
-    
-    handle /cdn-cgi/rum {
-        respond 204
-    }
-
-    # Prevent hotlinking of model files
-    @invalid_referer {
-        path_regexp .*/resolve/main/.*
-        not header !Referer
-        not header_regexp Referer ^https?://.*\.onrender\.com
-        not header_regexp Referer ^https?://localhost
-    }
-    handle @invalid_referer {
-        root * /var/www/html/hf-mirror.com/
-        try_files /invalid_referer.html
-        file_server
-    }
-
-    # Disable login functionality
-    @auth {
+    # Redirect login attempts
+    @login_routes {
         path /login /join
     }
-    handle @auth {
-        root * /var/www/html/hf-mirror.com/
-        try_files /login_error.html
-        file_server
+    handle @login_routes {
+        redir /login_error.html
     }
 
-    # Reverse proxy to huggingface.co
+    # Forward everything else to huggingface.co
     handle {
         reverse_proxy https://huggingface.co {
             header_up Host huggingface.co
