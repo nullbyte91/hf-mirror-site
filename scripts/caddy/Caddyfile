@@ -1,12 +1,9 @@
-:8080 {
-    # Enable logging
+:{$PORT} {
     log
 
-    # Serve static files
     root * /var/www/html/hf-mirror.com
     file_server
 
-    # Forward all other requests to huggingface.co
     reverse_proxy https://huggingface.co {
         header_up Host huggingface.co
     }
