@@ -1,4 +1,3 @@
-
 FROM golang:1.22 AS builder
 
 # Install xcaddy
@@ -6,8 +5,8 @@ RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 
 WORKDIR /build
 
-# Build Caddy with required plugins - fixed version syntax
-RUN xcaddy build \
+# Build Caddy with required plugins - specify v2.7.6 which is compatible with Go 1.22
+RUN xcaddy build v2.7.6 \
   --with github.com/caddyserver/replace-response@latest \
   --with github.com/caddyserver/transform-encoder@latest \
   --output /build/caddy
