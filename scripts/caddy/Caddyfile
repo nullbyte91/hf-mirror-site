@@ -1,4 +1,4 @@
-# Simple Caddyfile for HF Mirror on Render
+# Simple Caddyfile for HF Mirror on Render - No special plugins required
 
 :8080 {
     # Basic logging to stdout (for Render logs)
@@ -20,9 +20,6 @@
         file_server
     }
 
-    # Prevent caching main UI to ensure latest version
-    header / Cache-Control "no-cache"
-    
     # Static assets cache for 3 days
     header /front/* Cache-Control "public, max-age=259200"
 
@@ -42,20 +39,26 @@
         not header_regexp Referer ^https?://.*\.onrender\.com
         not header_regexp Referer ^https?://localhost
     }
-    rewrite @invalid_referer /invalid_referer.html
+    handle @invalid_referer {
+        root * /var/www/html/hf-mirror.com/
+        try_files /invalid_referer.html
+        file_server
+    }
 
     # Disable login functionality
     @auth {
         path /login /join
     }
-    rewrite @auth /login_error.html
+    handle @auth {
+        root * /var/www/html/hf-mirror.com/
+        try_files /login_error.html
+        file_server
+    }
 
-    # Replace Hugging Face references in responses
+    # Reverse proxy to huggingface.co
     handle {
         reverse_proxy https://huggingface.co {
-            header_up Host {upstream_hostport}
-            header_down Location huggingface\.co {http.request.host}
-            header_down Location cdn-lfs\.huggingface\.co cdn-lfs.{http.request.host}
+            header_up Host huggingface.co
         }
     }
 }
