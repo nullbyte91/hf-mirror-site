@@ -1,45 +1,13 @@
-# Minimal Working Caddyfile for HF Mirror on Render
-
 :8080 {
-    # Enable logging to debug issues
-    log {
-        output stdout
-        format console
-        level INFO
-    }
+    # Enable logging
+    log
 
-    # Set root directory for static files
+    # Serve static files
     root * /var/www/html/hf-mirror.com
+    file_server
 
-    # Handle homepage - serve index.html
-    @homepage {
-        path /
-    }
-    handle @homepage {
-        try_files {path} /index.html
-        file_server
-    }
-
-    # Static files - ensure these are served directly
-    @static {
-        path *.css *.js *.ico *.svg *.html
-    }
-    handle @static {
-        file_server
-    }
-
-    # Redirect login attempts
-    @login_routes {
-        path /login /join
-    }
-    handle @login_routes {
-        redir /login_error.html
-    }
-
-    # Forward everything else to huggingface.co
-    handle {
-        reverse_proxy https://huggingface.co {
-            header_up Host huggingface.co
-        }
+    # Forward all other requests to huggingface.co
+    reverse_proxy https://huggingface.co {
+        header_up Host huggingface.co
     }
 }
